@@ -1,5 +1,5 @@
 [project]
-name = 'Spectral'
+name = 'Specktral'
 version = '0.0'
 description = 'A lightweight implementation of spectral disctretizations for research purposes'
 license = {text = "BSD-2-Clause"}
