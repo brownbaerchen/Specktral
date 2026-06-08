@@ -31,13 +31,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --cov=specktral --cov-branch --cov-report=xml --debug=trace tests
-
-      - name: Inspect coverage file
-        run: |
-          ls -l coverage.xml
-          wc -c coverage.xml
-          head -50 coverage.xml
+          pytest --cov=specktral --cov-branch --cov-report=xml tests
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
