@@ -119,7 +119,7 @@ class SpectralOneDBase:
         """
         Get the grid in spectral space
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def get_empty_operator_matrix(self, S, Zero):
         """
@@ -133,24 +133,6 @@ class SpectralOneDBase:
             list of lists containing sparse zeros
         """
         return [[Zero for _ in range(S)] for _ in range(S)]
-
-    def get_basis_change_matrix(self, *args, **kwargs):
-        """
-        Some spectral discretization change the basis during differentiation. This method can be used to transfer
-        between the various bases.
-
-        This method accepts arbitrary arguments that may not be used in order to provide an easy interface for multi-
-        dimensional bases. For instance, you may combine an FFT discretization with an ultraspherical discretization.
-        The FFT discretization will always be in the same base, but the ultraspherical discretization uses a different
-        base for every derivative. You can then ask all bases for transfer matrices from one ultraspherical derivative
-        base to the next. The FFT discretization will ignore this and return an identity while the ultraspherical
-        discretization will return the desired matrix. After a Kronecker product, you get the 2D version of the matrix
-        you want. This is what the `SpectralHelper` does when you call the method of the same name on it.
-
-        Returns:
-            sparse bases change matrix
-        """
-        return self.sparse_lib.eye(self.N)
 
     def get_BC(self, kind):
         """
@@ -167,32 +149,6 @@ class SpectralOneDBase:
         """
         raise NotImplementedError(f"No boundary conditions of {kind=!r} implemented!")
 
-    def get_filter_matrix(self, kmin=0, kmax=None):
-        """
-        Get a bandpass filter.
-
-        Args:
-            kmin (int): Lower limit of the bandpass filter
-            kmax (int): Upper limit of the bandpass filter
-
-        Returns:
-            sparse matrix
-        """
-
-        k = abs(self.get_wavenumbers())
-
-        kmax = max(k) if kmax is None else kmax
-
-        mask = self.xp.logical_or(k >= kmax, k < kmin)
-
-        if self.useGPU:
-            Id = self.get_Id().get()
-        else:
-            Id = self.get_Id()
-        F = Id.tolil()
-        F[:, mask] = 0
-        return F.tocsc()
-
     def get_grid(self):
         """
         Get the grid in physical space
@@ -200,4 +156,4 @@ class SpectralOneDBase:
         Returns:
             self.xp.array: Grid
         """
-        raise NotImplementedError
+        raise NotImplementedError()
