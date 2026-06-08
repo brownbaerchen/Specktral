@@ -32,7 +32,7 @@ class Chebychev(SpectralOneDBase):
 
         self.norm = self.get_norm()
 
-    def get_1dgrid(self):
+    def get_grid(self):
         """
         Generates a 1D grid with Chebychev points. These are clustered at the boundary. You need this kind of grid to
         use discrete cosine transformation (DCT) to get the Chebychev representation. If you want a different grid, you

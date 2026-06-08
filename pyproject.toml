@@ -16,12 +16,17 @@ classifiers = [
 dependencies = [
     'numpy>=1.15.4',
     'scipy>=0.17.1',
-    'matplotlib>=3.0',
     ]
 
 [project.optional-dependencies]
 dev = [
+    'pre-commit',
     'pytest',
     'pytest-cov',
-    'pre-commit',
+    'matplotlib>=3.0',
     ]
+
+examples = [
+    'matplotlib>=3.0',
+    'jupyter',
+]

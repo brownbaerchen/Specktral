@@ -193,7 +193,7 @@ class SpectralOneDBase:
         F[:, mask] = 0
         return F.tocsc()
 
-    def get_1dgrid(self):
+    def get_grid(self):
         """
         Get the grid in physical space
 

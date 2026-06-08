@@ -37,7 +37,7 @@ def test_T_U_conversion(N):
     U2T = cheby.get_conv("U2T")
 
     coeffs = np.random.random(N)
-    x = cheby.get_1dgrid()
+    x = cheby.get_grid()
 
     def eval_poly(poly, coeffs, x):
         return np.array([coeffs[i] * poly(i)(x) for i in range(len(coeffs))]).sum(
@@ -77,7 +77,7 @@ def test_differentiation_matrix(N):
     from specktral.bases import Chebychev
 
     cheby = Chebychev(N)
-    x = cheby.get_1dgrid()
+    x = cheby.get_grid()
     coeffs = np.random.random(N)
     norm = cheby.get_norm()
 
@@ -98,7 +98,7 @@ def test_differentiation_non_standard_domain_size(N, x0, x1, p):
     from specktral.bases import Chebychev
 
     cheby = Chebychev(N, x0=x0, x1=x1)
-    x = cheby.get_1dgrid()
+    x = cheby.get_grid()
     assert all(x > x0)
     assert all(x < x1)
 
@@ -143,7 +143,7 @@ def test_integration_matrix(N):
 #     from qmat.lagrange import LagrangeApproximation
 #
 #     cheby = Chebychev(N, x0=x0, x1=x1)
-#     x = cheby.get_1dgrid()
+#     x = cheby.get_grid()
 #
 #     coeffs = np.random.random(N)
 #     coeffs[-1] = 0
@@ -172,7 +172,7 @@ def test_transform(N, d):
     cheby = Chebychev(N)
     u = np.random.random((d, N))
     norm = cheby.get_norm()
-    x = (cheby.get_1dgrid() - cheby.lin_trf_off) / cheby.lin_trf_fac
+    x = (cheby.get_grid() - cheby.lin_trf_off) / cheby.lin_trf_fac
 
     itransform = cheby.itransform(u, axes=(-1,)).real
 
@@ -212,7 +212,7 @@ def test_norm(N):
 
     cheby = Chebychev(N)
     coeffs = np.random.random(N)
-    x = cheby.get_1dgrid()
+    x = cheby.get_grid()
     norm = cheby.get_norm()
 
     u = np.polynomial.Chebyshev(coeffs)(x)
@@ -239,7 +239,7 @@ def test_tau_method(bc, N, bc_val):
     import numpy as np
 
     cheby = Chebychev(N)
-    x = cheby.get_1dgrid()
+    x = cheby.get_grid()
 
     coef = np.append(np.zeros(N - 1), [1])
     rhs = np.append(np.zeros(N - 1), [bc_val])
@@ -282,8 +282,8 @@ def test_tau_method2D(bc, nz, nx, bc_val, plotting=False):
     fft = Fourier(nx)
 
     # generate grid
-    x = fft.get_1dgrid()
-    z = cheby.get_1dgrid()
+    x = fft.get_grid()
+    z = cheby.get_grid()
     Z, X = np.meshgrid(z, x)
 
     # put BCs in right hand side
@@ -360,8 +360,8 @@ def test_tau_method2D_diffusion(nz, nx, bc_val, plotting=False):
     fft = Fourier(nx)
 
     # generate grid
-    x = fft.get_1dgrid()
-    z = cheby.get_1dgrid()
+    x = fft.get_grid()
+    z = cheby.get_grid()
     Z, X = np.meshgrid(z, x)
 
     # put BCs in right hand side
@@ -441,7 +441,7 @@ def test_Neumann_BCs(N, x, v):
 
     BC = helper.get_BC("Neumann", x=x)
 
-    grid = helper.get_1dgrid()
+    grid = helper.get_grid()
     u = grid**v
 
     u_hat = helper.transform(u)

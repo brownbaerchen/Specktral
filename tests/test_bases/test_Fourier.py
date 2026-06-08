@@ -11,7 +11,7 @@ def test_differentiation_matrix(N, x0, x1, plot=False):
     x1 = 2 * np.pi if x1 is None else x1
     helper = Fourier(N=N, x0=x0, x1=x1)
 
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
     D = helper.get_differentiation_matrix()
 
     u = np.zeros_like(x).astype("D")
@@ -61,7 +61,7 @@ def test_integration_matrix(N, plot=False):
 
     helper = Fourier(N=N)
 
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
     D = helper.get_integration_matrix()
 
     u = np.zeros_like(x)
@@ -98,7 +98,7 @@ def test_integral_whole_interval(x0, x1, N):
     from specktral.bases import Fourier
 
     helper = Fourier(N, x0=x0, x1=x1)
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
 
     u = np.zeros_like(x)
 

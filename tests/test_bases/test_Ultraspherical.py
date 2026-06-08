@@ -8,7 +8,7 @@ def test_differentiation_matrix(N, p):
     from specktral.bases import Ultraspherical
 
     helper = Ultraspherical(N)
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
     coeffs = np.random.random(N)
 
     D = helper.get_differentiation_matrix(p=p)
@@ -29,7 +29,7 @@ def test_differentiation_non_standard_domain_size(N, x0, x1, p):
     from specktral.bases import Ultraspherical
 
     helper = Ultraspherical(N, x0=x0, x1=x1)
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
     assert all(x > x0)
     assert all(x < x1)
 
@@ -75,7 +75,7 @@ def test_integration_rescaled_domain(N, x0, x1=1):
 
     helper = Ultraspherical(N, x0=x0, x1=x1)
 
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
     y = N - 2
     u = x**y * (y + 1)
     u_hat = helper.transform(u)
@@ -116,7 +116,7 @@ def test_poisson_problem(N, deg, Dirichlet_recombination):
     b = 4
 
     helper = Ultraspherical(N)
-    x = helper.get_1dgrid()
+    x = helper.get_grid()
 
     f = x**deg * (deg + 1) * (deg + 2) * (a - b) / 2
 

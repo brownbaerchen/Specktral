@@ -20,7 +20,7 @@ class Fourier(SpectralOneDBase):
         """
         super().__init__(*args, x0=x0, x1=x1, **kwargs)
 
-    def get_1dgrid(self):
+    def get_grid(self):
         """
         We use equally spaced points including the left boundary and not including the right one, which is the left boundary.
         """
