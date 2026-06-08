@@ -33,12 +33,20 @@ jobs:
         run: |
           pytest --cov=specktral --cov-branch --cov-report=xml tests
 
+      - name: Inspect coverage file
+        run: |
+          ls -l coverage.xml
+          wc -c coverage.xml
+          head -50 coverage.xml
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         if: matrix.py-version == '3.14'
         with:
+          files: ./coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: brownbaerchen/Specktral
+
   pre-commit:
     runs-on: ubuntu-latest
     timeout-minutes: 120
