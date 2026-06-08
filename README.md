@@ -1,3 +1,6 @@
+[![ci](https://github.com/brownbaerchen/Specktral/actions/workflows/CI.yaml/badge.svg)](https://github.com/brownbaerchen/Specktral/actions/workflows/CI.yaml)
+[![codecov](https://codecov.io/gh/brownbaerchen/Specktral/graph/badge.svg?token=xwxeDDJrr5)](https://codecov.io/gh/brownbaerchen/Specktral)
+
 # Welcome to Specktral!
 
 "Alles ist besser mit Speck" (Robert Speck), translates to "Everything is better with bacon" and we don't dare argue with that.
