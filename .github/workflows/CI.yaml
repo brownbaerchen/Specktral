@@ -27,11 +27,11 @@ jobs:
 
       - name: Install Spectral with test dependencies
         run: |
-          pip install .[dev]
+          pip install -e .[dev]
 
       - name: Run tests
         run: |
-          pytest --cov=specktral --cov-branch --cov-report=xml tests
+          pytest --cov=specktral --cov-branch --cov-report=xml --debug=trace tests
 
       - name: Inspect coverage file
         run: |
