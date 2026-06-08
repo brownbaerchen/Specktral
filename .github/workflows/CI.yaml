@@ -31,7 +31,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --cov --cov-branch --cov-report=xml
+          pytest --cov=specktral --cov-branch --cov-report=xml tests
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -39,3 +39,24 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: brownbaerchen/Specktral
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    name: Pre-commit hooks
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+          architecture: x64
+
+      - name: Install Spectral with test dependencies
+        run: |
+          pip install .[dev]
+
+      - name: Run tests
+        run: |
+          pre-commit run --all-files
