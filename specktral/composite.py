@@ -20,3 +20,10 @@ class CompositeBase:
         """
         grids = [self.bases[i].get_grid() for i in range(self.ndim)]
         return self.xp.meshgrid(*grids, indexing="ij")
+
+    def get_wavenumbers(self):
+        """
+        Get grid in spectral space
+        """
+        grids = [self.bases[i].get_wavenumbers() for i in range(self.ndim)]
+        return self.xp.meshgrid(*grids, indexing="ij")
