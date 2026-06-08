@@ -25,10 +25,17 @@ jobs:
           python-version: ${{ matrix.py-version }}
           architecture: x64
 
-      - name: Install Spectral
+      - name: Install Spectral with test dependencies
         run: |
-          pip install .
+          pip install .[dev]
 
       - name: Run tests
         run: |
-          pytest tests
+          pytest --cov --cov-branch --cov-report=xml tests
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.py-version == '3.14'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: brownbaerchen/Specktral
