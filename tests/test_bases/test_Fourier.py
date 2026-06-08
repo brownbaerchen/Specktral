@@ -1,9 +1,9 @@
 import pytest
 
 
-@pytest.mark.parametrize('N', [9, 64])
-@pytest.mark.parametrize('x0', [-4, 0, 1])
-@pytest.mark.parametrize('x1', [None, 4, 8])
+@pytest.mark.parametrize("N", [9, 64])
+@pytest.mark.parametrize("x0", [-4, 0, 1])
+@pytest.mark.parametrize("x1", [None, 4, 8])
 def test_differentiation_matrix(N, x0, x1, plot=False):
     import numpy as np
     from specktral.bases import Fourier
@@ -14,7 +14,7 @@ def test_differentiation_matrix(N, x0, x1, plot=False):
     x = helper.get_1dgrid()
     D = helper.get_differentiation_matrix()
 
-    u = np.zeros_like(x).astype('D')
+    u = np.zeros_like(x).astype("D")
     expect = np.zeros_like(u)
 
     num_coef = N // 2
@@ -35,18 +35,18 @@ def test_differentiation_matrix(N, x0, x1, plot=False):
 
         plt.plot(x, u)
         plt.plot(x, Du)
-        plt.plot(x, expect, '--')
+        plt.plot(x, expect, "--")
         plt.show()
 
     assert np.allclose(expect, Du)
 
 
-@pytest.mark.parametrize('useFFTW', [False])
+@pytest.mark.parametrize("useFFTW", [False])
 def test_transform(useFFTW, N=8):
     import numpy as np
     from specktral.bases import Fourier
 
-    u = np.random.random(N).astype('D')
+    u = np.random.random(N).astype("D")
     helper = Fourier(N=N, useFFTW=useFFTW)
     u_hat = helper.transform(u)
 
@@ -54,7 +54,7 @@ def test_transform(useFFTW, N=8):
     assert np.allclose(u, helper.itransform(u_hat))
 
 
-@pytest.mark.parametrize('N', [8, 64])
+@pytest.mark.parametrize("N", [8, 64])
 def test_integration_matrix(N, plot=False):
     import numpy as np
     from specktral.bases import Fourier
@@ -84,15 +84,15 @@ def test_integration_matrix(N, plot=False):
 
         plt.plot(x, u)
         plt.plot(x, Du)
-        plt.plot(x, expect, '--')
+        plt.plot(x, expect, "--")
         plt.show()
 
     assert np.allclose(expect, Du)
 
 
-@pytest.mark.parametrize('x0', [-1, 0])
-@pytest.mark.parametrize('x1', [0.789, 1])
-@pytest.mark.parametrize('N', [32, 45])
+@pytest.mark.parametrize("x0", [-1, 0])
+@pytest.mark.parametrize("x1", [0.789, 1])
+@pytest.mark.parametrize("N", [32, 45])
 def test_integral_whole_interval(x0, x1, N):
     import numpy as np
     from specktral.bases import Fourier
@@ -118,8 +118,8 @@ def test_integral_whole_interval(x0, x1, N):
     assert np.isclose(integral, integral_ref, atol=1e-7), abs(integral_ref - integral)
 
 
-@pytest.mark.parametrize('N', [4, 32])
-@pytest.mark.parametrize('v', [0, 4.78])
+@pytest.mark.parametrize("N", [4, 32])
+@pytest.mark.parametrize("v", [0, 4.78])
 def test_tau_method(N, v):
     import numpy as np
     from specktral.bases import Fourier

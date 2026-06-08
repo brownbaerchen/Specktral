@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.mark.parametrize('N', [4, 32])
+@pytest.mark.parametrize("N", [4, 32])
 def test_D2T_conversion_matrices(N):
     import numpy as np
     from specktral.bases import Chebychev
@@ -9,7 +9,7 @@ def test_D2T_conversion_matrices(N):
     cheby = Chebychev(N)
 
     x = np.linspace(-1, 1, N)
-    D2T = cheby.get_conv('D2T')
+    D2T = cheby.get_conv("D2T")
 
     for i in range(N):
         coeffs = np.zeros(N)
@@ -25,7 +25,7 @@ def test_D2T_conversion_matrices(N):
         assert Dn[-1] == expect_right
 
 
-@pytest.mark.parametrize('N', [4, 32])
+@pytest.mark.parametrize("N", [4, 32])
 def test_T_U_conversion(N):
     import numpy as np
     from scipy.special import chebyt, chebyu
@@ -33,14 +33,16 @@ def test_T_U_conversion(N):
 
     cheby = Chebychev(N)
 
-    T2U = cheby.get_conv('T2U')
-    U2T = cheby.get_conv('U2T')
+    T2U = cheby.get_conv("T2U")
+    U2T = cheby.get_conv("U2T")
 
     coeffs = np.random.random(N)
     x = cheby.get_1dgrid()
 
     def eval_poly(poly, coeffs, x):
-        return np.array([coeffs[i] * poly(i)(x) for i in range(len(coeffs))]).sum(axis=0)
+        return np.array([coeffs[i] * poly(i)(x) for i in range(len(coeffs))]).sum(
+            axis=0
+        )
 
     u = eval_poly(chebyu, coeffs, x)
     t_from_u = eval_poly(chebyt, U2T @ coeffs, x)
@@ -56,7 +58,7 @@ def test_T_U_conversion(N):
     assert np.allclose(t, u_from_t_r)
 
 
-@pytest.mark.parametrize('name', ['T2U', 'T2D', 'T2T'])
+@pytest.mark.parametrize("name", ["T2U", "T2D", "T2T"])
 def test_conversion_inverses(name):
     from specktral.bases import Chebychev
     import numpy as np
@@ -68,7 +70,7 @@ def test_conversion_inverses(name):
     assert np.allclose((P @ Pinv).toarray(), np.diag(np.ones(N)))
 
 
-@pytest.mark.parametrize('N', [4, 32])
+@pytest.mark.parametrize("N", [4, 32])
 def test_differentiation_matrix(N):
     import numpy as np
     import scipy
@@ -87,13 +89,12 @@ def test_differentiation_matrix(N):
     assert np.allclose(exact, du)
 
 
-@pytest.mark.parametrize('N', [4, 7, 32])
-@pytest.mark.parametrize('x0', [-1, 0])
-@pytest.mark.parametrize('x1', [0.789, 1])
-@pytest.mark.parametrize('p', [1, 2])
+@pytest.mark.parametrize("N", [4, 7, 32])
+@pytest.mark.parametrize("x0", [-1, 0])
+@pytest.mark.parametrize("x1", [0.789, 1])
+@pytest.mark.parametrize("p", [1, 2])
 def test_differentiation_non_standard_domain_size(N, x0, x1, p):
     import numpy as np
-    import scipy
     from specktral.bases import Chebychev
 
     cheby = Chebychev(N, x0=x0, x1=x1)
@@ -116,7 +117,7 @@ def test_differentiation_non_standard_domain_size(N, x0, x1, p):
     assert np.allclose(du, du_exact), np.linalg.norm(du_exact - du)
 
 
-@pytest.mark.parametrize('N', [4, 32])
+@pytest.mark.parametrize("N", [4, 32])
 def test_integration_matrix(N):
     import numpy as np
     from specktral.bases import Chebychev
@@ -140,29 +141,29 @@ def test_integration_matrix(N):
 #     import numpy as np
 #     from specktral.bases import Chebychev
 #     from qmat.lagrange import LagrangeApproximation
-# 
+#
 #     cheby = Chebychev(N, x0=x0, x1=x1)
 #     x = cheby.get_1dgrid()
-# 
+#
 #     coeffs = np.random.random(N)
 #     coeffs[-1] = 0
-# 
+#
 #     u_hat = coeffs
 #     u = cheby.itransform(u_hat)
-# 
+#
 #     weights = cheby.get_integration_weights()
 #     integral = weights @ u_hat
-# 
+#
 #     # generate a reference solution with qmat
 #     lag = LagrangeApproximation(points=x)
 #     Q = lag.getIntegrationMatrix(intervals=[(x0, x1)])
 #     integral_ref = (Q @ u)[0]
-# 
+#
 #     assert np.isclose(integral, integral_ref)
 
 
-@pytest.mark.parametrize('N', [4])
-@pytest.mark.parametrize('d', [1, 2, 3])
+@pytest.mark.parametrize("N", [4])
+@pytest.mark.parametrize("d", [1, 2, 3])
 def test_transform(N, d):
     import scipy
     import numpy as np
@@ -178,13 +179,15 @@ def test_transform(N, d):
     for i in range(d):
         assert np.allclose(np.polynomial.Chebyshev(u[i])(x), itransform[i])
     assert np.allclose(u.shape, itransform.shape)
-    assert np.allclose(scipy.fft.dct(u, axis=-1) * norm, cheby.transform(u, axes=(-1,)).real)
+    assert np.allclose(
+        scipy.fft.dct(u, axis=-1) * norm, cheby.transform(u, axes=(-1,)).real
+    )
     assert np.allclose(scipy.fft.idct(u / norm, axis=-1), itransform)
     assert np.allclose(cheby.transform(cheby.itransform(u, axes=(-1,)), axes=(-1,)), u)
     assert np.allclose(cheby.itransform(cheby.transform(u, axes=(-1,)), axes=(-1,)), u)
 
 
-@pytest.mark.parametrize('N', [8, 32])
+@pytest.mark.parametrize("N", [8, 32])
 def test_integration_BC(N):
     from specktral.bases import Chebychev
     import numpy as np
@@ -201,7 +204,7 @@ def test_integration_BC(N):
     assert np.isclose(integral, reference_integral(1))
 
 
-@pytest.mark.parametrize('N', [4, 32])
+@pytest.mark.parametrize("N", [4, 32])
 def test_norm(N):
     from specktral.bases import Chebychev
     import numpy as np
@@ -220,18 +223,18 @@ def test_norm(N):
     assert np.allclose(coeffs, coeffs_dct)
 
 
-@pytest.mark.parametrize('bc', [-1, 0, 1])
-@pytest.mark.parametrize('N', [3, 32])
-@pytest.mark.parametrize('bc_val', [-99, 3.1415])
+@pytest.mark.parametrize("bc", [-1, 0, 1])
+@pytest.mark.parametrize("N", [3, 32])
+@pytest.mark.parametrize("bc_val", [-99, 3.1415])
 def test_tau_method(bc, N, bc_val):
-    '''
+    """
     solve u_x - u + tau P = 0, u(bc) = bc_val
 
     We choose P = T_N or U_N. We replace the last row in the matrix with the boundary condition to get a
     unique solution for the given resolution.
 
     The test verifies that the solution satisfies the perturbed equation and the boundary condition.
-    '''
+    """
     from specktral.bases import Chebychev
     import numpy as np
 
@@ -254,21 +257,23 @@ def test_tau_method(bc, N, bc_val):
     d_sol_poly = sol_poly.deriv(1)
     x = np.linspace(-1, 1, 100)
 
-    assert np.isclose(sol_poly(bc), bc_val), 'Solution does not satisfy boundary condition'
+    assert np.isclose(sol_poly(bc), bc_val), (
+        "Solution does not satisfy boundary condition"
+    )
 
     tau = (d_sol_poly(x) - sol_poly(x)) / P(x)
-    assert np.allclose(tau, tau[0]), 'Solution does not satisfy perturbed equation'
+    assert np.allclose(tau, tau[0]), "Solution does not satisfy perturbed equation"
 
 
-@pytest.mark.parametrize('bc', [-1, 1])
-@pytest.mark.parametrize('nx', [4, 8])
-@pytest.mark.parametrize('nz', [4, 8])
-@pytest.mark.parametrize('bc_val', [-2, 1.0])
+@pytest.mark.parametrize("bc", [-1, 1])
+@pytest.mark.parametrize("nx", [4, 8])
+@pytest.mark.parametrize("nz", [4, 8])
+@pytest.mark.parametrize("bc_val", [-2, 1.0])
 def test_tau_method2D(bc, nz, nx, bc_val, plotting=False):
-    '''
+    """
     solve u_z - 0.1u_xx -u_x + tau P = 0, u(bc) = sin(bc_val*x) -> space-time discretization of advection-diffusion
     problem. We do FFT in x-direction and Chebychev in z-direction.
-    '''
+    """
     from specktral.bases import Chebychev, Fourier
     import numpy as np
     import scipy.sparse as sp
@@ -285,7 +290,9 @@ def test_tau_method2D(bc, nz, nx, bc_val, plotting=False):
     bcs = np.sin(bc_val * x)
     rhs = np.zeros_like(X)
     rhs[:, -1] = bcs
-    rhs_hat = fft.transform(rhs, axes=(-2,))  # the rhs is already in Chebychev spectral space
+    rhs_hat = fft.transform(
+        rhs, axes=(-2,)
+    )  # the rhs is already in Chebychev spectral space
 
     # generate matrices
     Dx = fft.get_differentiation_matrix(p=2) * 1e-1 + fft.get_differentiation_matrix()
@@ -295,9 +302,9 @@ def test_tau_method2D(bc, nz, nx, bc_val, plotting=False):
     A = sp.kron(Ix, Dz) - sp.kron(Dx, Iz)
 
     # put BCs in the system matrix
-    BCz = sp.eye(nz, format='lil') * 0
+    BCz = sp.eye(nz, format="lil") * 0
     BCz[-1, :] = cheby.get_Dirichlet_BC_row(bc)
-    BC = sp.kron(Ix, BCz, format='lil')
+    BC = sp.kron(Ix, BCz, format="lil")
     A[BC != 0] = BC[BC != 0]
 
     # solve the system
@@ -317,17 +324,18 @@ def test_tau_method2D(bc, nz, nx, bc_val, plotting=False):
 
         im = plt.pcolormesh(X, Z, sol)
         plt.colorbar(im)
-        plt.xlabel('x')
-        plt.ylabel('t')
+        plt.xlabel("x")
+        plt.ylabel("t")
         plt.show()
 
     for i in range(nx):
+        assert np.isclose(polys[i](bc), bcs[i]), (
+            f"Solution does not satisfy boundary condition x={x[i]}"
+        )
 
-        assert np.isclose(polys[i](bc), bcs[i]), f'Solution does not satisfy boundary condition x={x[i]}'
-
-        assert np.allclose(
-            polys[i](z), sol[i, :]
-        ), f'Solution is incorrectly transformed back to real space at x={x[i]}'
+        assert np.allclose(polys[i](z), sol[i, :]), (
+            f"Solution is incorrectly transformed back to real space at x={x[i]}"
+        )
 
         # coef = np.append(np.zeros(nz - 1), [1])
         # Pz = np.polynomial.Chebyshev(coef)
@@ -337,13 +345,13 @@ def test_tau_method2D(bc, nz, nx, bc_val, plotting=False):
         # assert np.allclose(tau, tau[0]), f'Solution does not satisfy perturbed equation at x={x[i]}'
 
 
-@pytest.mark.parametrize('nx', [4, 8])
-@pytest.mark.parametrize('nz', [16])
-@pytest.mark.parametrize('bc_val', [4.0])
+@pytest.mark.parametrize("nx", [4, 8])
+@pytest.mark.parametrize("nz", [16])
+@pytest.mark.parametrize("bc_val", [4.0])
 def test_tau_method2D_diffusion(nz, nx, bc_val, plotting=False):
-    '''
+    """
     Solve a Poisson problem with funny Dirichlet BCs in z-direction and periodic in x-direction.
-    '''
+    """
     from specktral.bases import Chebychev, Fourier
     import numpy as np
     import scipy.sparse as sp
@@ -360,7 +368,9 @@ def test_tau_method2D_diffusion(nz, nx, bc_val, plotting=False):
     rhs = np.zeros((2, nx, nz))  # components u and u_x
     rhs[0, :, -1] = np.sin(bc_val * x) + 1
     rhs[1, :, -1] = 3 * np.exp(-((x - 3.6) ** 2)) + np.cos(x)
-    rhs_hat = fft.transform(rhs, axes=(-2,))  # the rhs is already in Chebychev spectral space
+    rhs_hat = fft.transform(
+        rhs, axes=(-2,)
+    )  # the rhs is already in Chebychev spectral space
 
     # generate 1D matrices
     Dx = fft.get_differentiation_matrix()
@@ -370,21 +380,21 @@ def test_tau_method2D_diffusion(nz, nx, bc_val, plotting=False):
 
     # generate 2D matrices
     D = sp.kron(Ix, Dz) + sp.kron(Dx, Iz)
-    I = sp.kron(Ix, Iz)
-    O = I * 0
+    Id = sp.kron(Ix, Iz)
+    Zero = Id * 0
 
     # generate system matrix
-    A = sp.bmat([[O, D], [D, -I]], format='lil')
+    A = sp.bmat([[Zero, D], [D, -Id]], format="lil")
 
     # generate BC matrices
-    BCa = sp.eye(nz, format='lil') * 0
+    BCa = sp.eye(nz, format="lil") * 0
     BCa[-1, :] = cheby.get_Dirichlet_BC_row(-1)
-    BCa = sp.kron(Ix, BCa, format='lil')
+    BCa = sp.kron(Ix, BCa, format="lil")
 
-    BCb = sp.eye(nz, format='lil') * 0
+    BCb = sp.eye(nz, format="lil") * 0
     BCb[-1, :] = cheby.get_Dirichlet_BC_row(1)
-    BCb = sp.kron(Ix, BCb, format='lil')
-    BC = sp.bmat([[BCa, O], [BCb, O]], format='lil')
+    BCb = sp.kron(Ix, BCb, format="lil")
+    BC = sp.bmat([[BCa, Zero], [BCb, Zero]], format="lil")
 
     # put BCs in the system matrix
     A[BC != 0] = BC[BC != 0]
@@ -403,30 +413,33 @@ def test_tau_method2D_diffusion(nz, nx, bc_val, plotting=False):
 
         im = plt.pcolormesh(X, Z, sol[0])
         plt.colorbar(im)
-        plt.xlabel('x')
-        plt.ylabel('z')
+        plt.xlabel("x")
+        plt.ylabel("z")
         plt.show()
 
     for i in range(nx):
+        assert np.isclose(polys[i](-1), rhs[0, i, -1]), (
+            f"Solution does not satisfy lower boundary condition x={x[i]}"
+        )
+        assert np.isclose(polys[i](1), rhs[1, i, -1]), (
+            f"Solution does not satisfy upper boundary condition x={x[i]}"
+        )
 
-        assert np.isclose(polys[i](-1), rhs[0, i, -1]), f'Solution does not satisfy lower boundary condition x={x[i]}'
-        assert np.isclose(polys[i](1), rhs[1, i, -1]), f'Solution does not satisfy upper boundary condition x={x[i]}'
-
-        assert np.allclose(
-            polys[i](z), sol[0, i, :]
-        ), f'Solution is incorrectly transformed back to real space at x={x[i]}'
+        assert np.allclose(polys[i](z), sol[0, i, :]), (
+            f"Solution is incorrectly transformed back to real space at x={x[i]}"
+        )
 
 
-@pytest.mark.parametrize('N', [4, 7, 32])
-@pytest.mark.parametrize('x', [-1, 1])
-@pytest.mark.parametrize('v', [2, 3])
+@pytest.mark.parametrize("N", [4, 7, 32])
+@pytest.mark.parametrize("x", [-1, 1])
+@pytest.mark.parametrize("v", [2, 3])
 def test_Neumann_BCs(N, x, v):
     from specktral.bases import Chebychev
     import numpy as np
 
     helper = Chebychev(N)
 
-    BC = helper.get_BC('Neumann', x=x)
+    BC = helper.get_BC("Neumann", x=x)
 
     grid = helper.get_1dgrid()
     u = grid**v

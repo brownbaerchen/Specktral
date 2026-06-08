@@ -1,5 +1,4 @@
 import numpy as np
-import scipy
 
 from ..utils import cache
 from .core import SpectralOneDBase
@@ -34,15 +33,19 @@ class Chebychev(SpectralOneDBase):
         self.norm = self.get_norm()
 
     def get_1dgrid(self):
-        '''
+        """
         Generates a 1D grid with Chebychev points. These are clustered at the boundary. You need this kind of grid to
         use discrete cosine transformation (DCT) to get the Chebychev representation. If you want a different grid, you
         need to do an affine transformation before any Chebychev business.
 
         Returns:
             numpy.ndarray: 1D grid
-        '''
-        return self.lin_trf_fac * self.xp.cos(np.pi / self.N * (self.xp.arange(self.N) + 0.5)) + self.lin_trf_off
+        """
+        return (
+            self.lin_trf_fac
+            * self.xp.cos(np.pi / self.N * (self.xp.arange(self.N) + 0.5))
+            + self.lin_trf_off
+        )
 
     def get_wavenumbers(self):
         """Get the domain in spectral space"""
@@ -50,7 +53,7 @@ class Chebychev(SpectralOneDBase):
 
     @cache
     def get_conv(self, name, N=None):
-        '''
+        """
         Get conversion matrix between different kinds of polynomials. The supported kinds are
          - T: Chebychev polynomials of first kind
          - U: Chebychev polynomials of second kind
@@ -65,20 +68,20 @@ class Chebychev(SpectralOneDBase):
 
         Returns:
             scipy.sparse: Sparse conversion matrix
-        '''
+        """
         N = N if N else self.N
         sp = self.sparse_lib
 
         def get_forward_conv(name):
-            if name == 'T2U':
+            if name == "T2U":
                 mat = (sp.eye(N) - sp.eye(N, k=2)).tocsc() / 2.0
                 mat[:, 0] *= 2
-            elif name == 'D2T':
+            elif name == "D2T":
                 mat = sp.eye(N) - sp.eye(N, k=2)
             elif name[0] == name[-1]:
                 mat = self.sparse_lib.eye(self.N)
             else:
-                raise NotImplementedError(f'Don\'t have conversion matrix {name!r}')
+                raise NotImplementedError(f"Don't have conversion matrix {name!r}")
             return mat
 
         try:
@@ -97,7 +100,7 @@ class Chebychev(SpectralOneDBase):
 
         return mat
 
-    def get_basis_change_matrix(self, conv='T2T', **kwargs):
+    def get_basis_change_matrix(self, conv="T2T", **kwargs):
         """
         As the differentiation matrix in Chebychev-T base is dense but is sparse when simultaneously changing base to
         Chebychev-U, you may need a basis change matrix to transfer the other matrices as well. This function returns a
@@ -122,7 +125,9 @@ class Chebychev(SpectralOneDBase):
         Returns:
            Sparse integration matrix
         """
-        S = self.sparse_lib.diags(1 / (self.xp.arange(self.N - 1) + 1), offsets=-1) @ self.get_conv('T2U')
+        S = self.sparse_lib.diags(
+            1 / (self.xp.arange(self.N - 1) + 1), offsets=-1
+        ) @ self.get_conv("T2U")
         n = self.xp.arange(self.N)
         if lbnd == 0:
             S = S.tocsc()
@@ -132,7 +137,9 @@ class Chebychev(SpectralOneDBase):
                 / (np.append([1], self.xp.arange(self.N // 2 - 1) + 1))
             ) * self.lin_trf_fac
         else:
-            raise NotImplementedError(f'This function allows to integrate only from x=0, you attempted from x={lbnd}.')
+            raise NotImplementedError(
+                f"This function allows to integrate only from x=0, you attempted from x={lbnd}."
+            )
         return S
 
     def get_integration_weights(self):
@@ -146,7 +153,7 @@ class Chebychev(SpectralOneDBase):
         return weights
 
     def get_differentiation_matrix(self, p=1):
-        '''
+        """
         Keep in mind that the T2T differentiation matrix is dense.
 
         Args:
@@ -154,18 +161,21 @@ class Chebychev(SpectralOneDBase):
 
         Returns:
             numpy.ndarray: Differentiation matrix
-        '''
+        """
         D = self.xp.zeros((self.N, self.N))
         for j in range(self.N):
             for k in range(j):
                 D[k, j] = 2 * j * ((j - k) % 2)
 
         D[0, :] /= 2
-        return self.sparse_lib.csc_matrix(self.xp.linalg.matrix_power(D, p)) / self.lin_trf_fac**p
+        return (
+            self.sparse_lib.csc_matrix(self.xp.linalg.matrix_power(D, p))
+            / self.lin_trf_fac**p
+        )
 
     @cache
     def get_norm(self, N=None):
-        '''
+        """
         Get normalization for converting Chebychev coefficients and DCT
 
         Args:
@@ -173,7 +183,7 @@ class Chebychev(SpectralOneDBase):
 
         Returns:
             self.xp.array: Normalization
-        '''
+        """
         N = self.N if N is None else N
         norm = self.xp.ones(N) / N
         norm[0] /= 2
@@ -191,12 +201,11 @@ class Chebychev(SpectralOneDBase):
             Data in spectral space
         """
         axes = axes if axes else tuple(i for i in range(u.ndim))
-        kwargs['s'] = shape
-        kwargs['norm'] = kwargs.get('norm', 'backward')
+        kwargs["s"] = shape
+        kwargs["norm"] = kwargs.get("norm", "backward")
 
         trf = self.fft_lib.dctn(u, *args, axes=axes, type=2, **kwargs)
         for axis in axes:
-
             if self.N < trf.shape[axis]:
                 # mpi4py-fft implements padding only for FFT, where the frequencies are sorted such that the zeros are
                 # removed in the middle rather than the end. We need to resort this here and put the highest frequencies
@@ -246,12 +255,11 @@ class Chebychev(SpectralOneDBase):
             Data in physical space
         """
         axes = axes if axes else tuple(i for i in range(u.ndim))
-        kwargs['s'] = shape
-        kwargs['norm'] = kwargs.get('norm', 'backward')
-        kwargs['overwrite_x'] = kwargs.get('overwrite_x', False)
+        kwargs["s"] = shape
+        kwargs["norm"] = kwargs.get("norm", "backward")
+        kwargs["overwrite_x"] = kwargs.get("overwrite_x", False)
 
         for axis in axes:
-
             if self.N == u.shape[axis]:
                 _u = u.copy()
             else:
@@ -297,11 +305,11 @@ class Chebychev(SpectralOneDBase):
         Args:
             kind ('integral' or 'dirichlet'): Kind of boundary condition you want
         """
-        if kind.lower() == 'integral':
+        if kind.lower() == "integral":
             return self.get_integ_BC_row(**kwargs)
-        elif kind.lower() == 'dirichlet':
+        elif kind.lower() == "dirichlet":
             return self.get_Dirichlet_BC_row(**kwargs)
-        elif kind.lower() == 'neumann':
+        elif kind.lower() == "neumann":
             return self.get_Neumann_BC_row(**kwargs)
         else:
             return super().get_BC(kind)
@@ -340,7 +348,9 @@ class Chebychev(SpectralOneDBase):
             n[2::4] *= -1
             return n
         else:
-            raise NotImplementedError(f'Don\'t know how to generate Dirichlet BC\'s at {x=}!')
+            raise NotImplementedError(
+                f"Don't know how to generate Dirichlet BC's at {x=}!"
+            )
 
     def get_Neumann_BC_row(self, x):
         """
@@ -352,7 +362,7 @@ class Chebychev(SpectralOneDBase):
         Returns:
             self.xp.ndarray: Row to put into a matrix
         """
-        n = self.xp.arange(self.N, dtype='D')
+        n = self.xp.arange(self.N, dtype="D")
         nn = n**2
         if x == -1:
             me = nn
@@ -361,16 +371,18 @@ class Chebychev(SpectralOneDBase):
         elif x == 1:
             return nn
         else:
-            raise NotImplementedError(f'Don\'t know how to generate Neumann BC\'s at {x=}!')
+            raise NotImplementedError(
+                f"Don't know how to generate Neumann BC's at {x=}!"
+            )
 
     def get_Dirichlet_recombination_matrix(self):
-        '''
+        """
         Get matrix for Dirichlet recombination, which changes the basis to have sparse boundary conditions.
         This makes for a good right preconditioner.
 
         Returns:
             scipy.sparse: Sparse conversion matrix
-        '''
+        """
         N = self.N
         sp = self.sparse_lib
 

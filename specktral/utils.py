@@ -1,5 +1,6 @@
 from functools import wraps
 
+
 def cache(func):
     """
     Decorator for caching return values of functions.
@@ -45,5 +46,3 @@ def cache(func):
         return result
 
     return wrapper
-
-

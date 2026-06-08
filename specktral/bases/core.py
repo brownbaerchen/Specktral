@@ -3,6 +3,7 @@ import scipy
 
 import logging
 
+
 class SpectralOneDBase:
     """
     Abstract base class for 1D spectral discretizations. Defines a common interface with parameters and functions that
@@ -47,12 +48,12 @@ class SpectralOneDBase:
 
         if useGPU:
             self.setup_GPU()
-            self.logger.debug('Set up for GPU')
+            self.logger.debug("Set up for GPU")
         else:
             self.setup_CPU(useFFTW=useFFTW)
 
         if useGPU and useFFTW:
-            raise ValueError('Please run either on GPUs or with FFTW, not both!')
+            raise ValueError("Please run either on GPUs or with FFTW, not both!")
 
     @classmethod
     def setup_GPU(cls):
@@ -61,7 +62,6 @@ class SpectralOneDBase:
         import cupyx.scipy.sparse as sparse_lib
         import cupyx.scipy.sparse.linalg as linalg
         import cupyx.scipy.fft as fft_lib
-        from pySDC.implementations.datatype_classes.cupy_mesh import cupy_mesh
 
         cls.xp = cp
         cls.sparse_lib = sparse_lib
@@ -79,13 +79,13 @@ class SpectralOneDBase:
         if useFFTW:
             from mpi4py_fft import fftw
 
-            cls.fft_backend = 'fftw'
+            cls.fft_backend = "fftw"
             cls.fft_lib = fftw
         else:
-            cls.fft_backend = 'scipy'
+            cls.fft_backend = "scipy"
             cls.fft_lib = scipy.fft
 
-        cls.fft_comm_backend = 'MPI'
+        cls.fft_comm_backend = "MPI"
 
     def get_Id(self):
         """
@@ -121,18 +121,18 @@ class SpectralOneDBase:
         """
         raise NotImplementedError
 
-    def get_empty_operator_matrix(self, S, O):
+    def get_empty_operator_matrix(self, S, Zero):
         """
         Return a matrix of operators to be filled with the connections between the solution components.
 
         Args:
             S (int): Number of components in the solution
-            O (sparse matrix): Zero matrix used for initialization
+            Zero (sparse matrix): Zero matrix used for initialization
 
         Returns:
             list of lists containing sparse zeros
         """
-        return [[O for _ in range(S)] for _ in range(S)]
+        return [[Zero for _ in range(S)] for _ in range(S)]
 
     def get_basis_change_matrix(self, *args, **kwargs):
         """
@@ -165,7 +165,7 @@ class SpectralOneDBase:
         Returns:
             self.xp.array: Boundary condition
         """
-        raise NotImplementedError(f'No boundary conditions of {kind=!r} implemented!')
+        raise NotImplementedError(f"No boundary conditions of {kind=!r} implemented!")
 
     def get_filter_matrix(self, kmin=0, kmax=None):
         """

@@ -1,7 +1,5 @@
 import numpy as np
-import scipy
 
-from ..utils import cache
 from .core import SpectralOneDBase
 
 from functools import partial
@@ -69,7 +67,7 @@ class Fourier(SpectralOneDBase):
         Returns:
             sparse integration matrix
         """
-        k = self.xp.array(self.get_wavenumbers(), dtype='complex128')
+        k = self.xp.array(self.get_wavenumbers(), dtype="complex128")
         k[0] = 1j * self.L
         return self.linalg.matrix_power(self.sparse_lib.diags(1 / (1j * k)), p)
 
@@ -80,23 +78,27 @@ class Fourier(SpectralOneDBase):
         return weights
 
     def get_plan(self, u, forward, *args, **kwargs):
-        if self.fft_lib.__name__ == 'mpi4py_fft.fftw':
-            if 'axes' in kwargs.keys():
-                kwargs['axes'] = tuple(kwargs['axes'])
+        if self.fft_lib.__name__ == "mpi4py_fft.fftw":
+            if "axes" in kwargs.keys():
+                kwargs["axes"] = tuple(kwargs["axes"])
             key = (forward, u.shape, args, *(me for me in kwargs.values()))
             if key in self.plans.keys():
                 return self.plans[key]
             else:
-                self.logger.debug(f'Generating FFT plan for {key=}')
-                transform = self.fft_lib.fftn(u, *args, **kwargs) if forward else self.fft_lib.ifftn(u, *args, **kwargs)
+                self.logger.debug(f"Generating FFT plan for {key=}")
+                transform = (
+                    self.fft_lib.fftn(u, *args, **kwargs)
+                    if forward
+                    else self.fft_lib.ifftn(u, *args, **kwargs)
+                )
                 self.plans[key] = transform
 
             return self.plans[key]
         else:
             if forward:
-                return partial(self.fft_lib.fftn, norm=kwargs.get('norm', 'backward'))
+                return partial(self.fft_lib.fftn, norm=kwargs.get("norm", "backward"))
             else:
-                return partial(self.fft_lib.ifftn, norm=kwargs.get('norm', 'forward'))
+                return partial(self.fft_lib.ifftn, norm=kwargs.get("norm", "forward"))
 
     def transform(self, u, *args, axes=None, shape=None, **kwargs):
         """
@@ -110,7 +112,7 @@ class Fourier(SpectralOneDBase):
             transformed data
         """
         axes = axes if axes else tuple(i for i in range(u.ndim))
-        kwargs['s'] = shape
+        kwargs["s"] = shape
         plan = self.get_plan(u, *args, forward=True, axes=axes, **kwargs)
         return plan(u, *args, axes=axes, **kwargs)
 
@@ -126,9 +128,11 @@ class Fourier(SpectralOneDBase):
             transformed data
         """
         axes = axes if axes else tuple(i for i in range(u.ndim))
-        kwargs['s'] = shape
+        kwargs["s"] = shape
         plan = self.get_plan(u, *args, forward=False, axes=axes, **kwargs)
-        return plan(u, *args, axes=axes, **kwargs) / np.prod([u.shape[axis] for axis in axes])
+        return plan(u, *args, axes=axes, **kwargs) / np.prod(
+            [u.shape[axis] for axis in axes]
+        )
 
     def get_BC(self, kind):
         """
@@ -142,12 +146,12 @@ class Fourier(SpectralOneDBase):
         Returns:
             self.xp.ndarray: Boundary condition row
         """
-        if kind.lower() == 'integral':
+        if kind.lower() == "integral":
             return self.get_integ_BC_row()
-        elif kind.lower() == 'nyquist':
-            assert (
-                self.N % 2 == 0
-            ), f'Do not eliminate the Nyquist mode with odd resolution as it is fully resolved. You chose {self.N} in this axis'
+        elif kind.lower() == "nyquist":
+            assert self.N % 2 == 0, (
+                f"Do not eliminate the Nyquist mode with odd resolution as it is fully resolved. You chose {self.N} in this axis"
+            )
             BC = self.xp.zeros(self.N)
             BC[self.get_Nyquist_mode_index()] = 1
             return BC

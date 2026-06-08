@@ -1,8 +1,8 @@
 import pytest
 
 
-@pytest.mark.parametrize('N', [4, 7, 32])
-@pytest.mark.parametrize('p', [1, 2, 3, 4])
+@pytest.mark.parametrize("N", [4, 7, 32])
+@pytest.mark.parametrize("p", [1, 2, 3, 4])
 def test_differentiation_matrix(N, p):
     import numpy as np
     from specktral.bases import Ultraspherical
@@ -20,13 +20,12 @@ def test_differentiation_matrix(N, p):
     assert np.allclose(exact, du)
 
 
-@pytest.mark.parametrize('N', [4, 7, 32])
-@pytest.mark.parametrize('x0', [-1, 0])
-@pytest.mark.parametrize('x1', [0.789, 1])
-@pytest.mark.parametrize('p', [1, 2])
+@pytest.mark.parametrize("N", [4, 7, 32])
+@pytest.mark.parametrize("x0", [-1, 0])
+@pytest.mark.parametrize("x1", [0.789, 1])
+@pytest.mark.parametrize("p", [1, 2])
 def test_differentiation_non_standard_domain_size(N, x0, x1, p):
     import numpy as np
-    import scipy
     from specktral.bases import Ultraspherical
 
     helper = Ultraspherical(N, x0=x0, x1=x1)
@@ -50,7 +49,7 @@ def test_differentiation_non_standard_domain_size(N, x0, x1, p):
     assert np.allclose(du, du_exact), np.linalg.norm(du_exact - du)
 
 
-@pytest.mark.parametrize('N', [4, 7, 32])
+@pytest.mark.parametrize("N", [4, 7, 32])
 def test_integration(N):
     import numpy as np
     from specktral.bases import Ultraspherical
@@ -68,8 +67,8 @@ def test_integration(N):
     assert np.allclose(poly.integ(lbnd=-1).coef[:-1], U_hat)
 
 
-@pytest.mark.parametrize('N', [4, 7, 32])
-@pytest.mark.parametrize('x0', [-1, 0])
+@pytest.mark.parametrize("N", [4, 7, 32])
+@pytest.mark.parametrize("x0", [-1, 0])
 def test_integration_rescaled_domain(N, x0, x1=1):
     import numpy as np
     from specktral.bases import Ultraspherical
@@ -91,11 +90,13 @@ def test_integration_rescaled_domain(N, x0, x1=1):
     # compare indefinite integral
     assert np.allclose(int_hat_expect[1:], U_hat[1:])
     if x0 == 0:
-        assert np.allclose(int_hat_expect[0], U_hat[0]), 'Integration constant is wrong!'
+        assert np.allclose(int_hat_expect[0], U_hat[0]), (
+            "Integration constant is wrong!"
+        )
 
     # compare definite integral
-    top = helper.get_BC(kind='dirichlet', x=1)
-    bot = helper.get_BC(kind='dirichlet', x=-1)
+    top = helper.get_BC(kind="dirichlet", x=1)
+    bot = helper.get_BC(kind="dirichlet", x=-1)
     res = ((top - bot) * U_hat).sum()
     if x0 == 0:
         assert np.isclose(res, 1)
@@ -103,9 +104,9 @@ def test_integration_rescaled_domain(N, x0, x1=1):
         assert np.isclose(res, 0 if y % 2 == 1 else 2)
 
 
-@pytest.mark.parametrize('N', [6, 33])
-@pytest.mark.parametrize('deg', [1, 3])
-@pytest.mark.parametrize('Dirichlet_recombination', [False, True])
+@pytest.mark.parametrize("N", [6, 33])
+@pytest.mark.parametrize("deg", [1, 3])
+@pytest.mark.parametrize("Dirichlet_recombination", [False, True])
 def test_poisson_problem(N, deg, Dirichlet_recombination):
     import numpy as np
     import scipy.sparse as sp

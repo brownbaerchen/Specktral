@@ -1,11 +1,8 @@
-import numpy as np
 import scipy
 
-from ..utils import cache
 from .Chebychev import Chebychev
 
 from scipy.special import factorial
-from functools import partial
 
 
 class Ultraspherical(Chebychev):
@@ -32,8 +29,12 @@ class Ultraspherical(Chebychev):
         sp = self.sparse_lib
         xp = self.xp
         N = self.N
-        l = p
-        return 2 ** (l - 1) * factorial(l - 1) * sp.diags(xp.arange(N - l) + l, offsets=l) / self.lin_trf_fac**p
+        return (
+            2 ** (p - 1)
+            * factorial(p - 1)
+            * sp.diags(xp.arange(N - p) + p, offsets=p)
+            / self.lin_trf_fac**p
+        )
 
     def get_S(self, lmbda):
         """
@@ -136,4 +137,7 @@ class Ultraspherical(Chebychev):
             None,
         ] * u_hat.ndim
         slices[axis] = slice(1, u_hat.shape[axis])
-        return self.xp.sum(u_hat[(*slices,)] * (-1) ** (self.xp.arange(u_hat.shape[axis] - 1)), axis=axis)
+        return self.xp.sum(
+            u_hat[(*slices,)] * (-1) ** (self.xp.arange(u_hat.shape[axis] - 1)),
+            axis=axis,
+        )
