@@ -87,6 +87,10 @@ class SpectralOneDBase:
 
         cls.fft_comm_backend = "MPI"
 
+    @property
+    def ndim(self):
+        return 1
+
     def get_Id(self):
         """
         Get identity matrix

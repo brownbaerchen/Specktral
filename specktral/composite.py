@@ -2,6 +2,8 @@ import numpy as np
 import scipy
 import logging
 
+from .utils import eliminate_zeros
+
 
 class CompositeBase:
     xp = np
@@ -80,7 +82,7 @@ class CompositeBase:
                 f"Matrix expansion not implemented for {ndim} dimensions!"
             )
 
-        mat = self.eliminate_zeros(mat)
+        mat = eliminate_zeros(self.sparse_lib, mat)
         return mat
 
     def get_differentiation_matrix(self, axes, **kwargs):
@@ -104,19 +106,3 @@ class CompositeBase:
             f"Set up differentiation matrix along axes {axes} with kwargs {kwargs}"
         )
         return D
-
-    def eliminate_zeros(self, A):
-        """
-        Eliminate zeros from sparse matrix. This can reduce memory footprint of matrices somewhat.
-        Note: At the time of writing, there are memory problems in the cupy implementation of `eliminate_zeros`.
-        Therefore, this function copies the matrix to host, eliminates the zeros there and then copies back to GPU.
-
-        Args:
-            A: sparse matrix to be pruned
-
-        Returns:
-            CSC sparse matrix
-        """
-        A = A.tocsc()
-        A.eliminate_zeros()
-        return A

@@ -46,3 +46,20 @@ def cache(func):
         return result
 
     return wrapper
+
+
+def eliminate_zeros(sparse_lib, A):
+    """
+    Eliminate zeros from sparse matrix. This can reduce memory footprint of matrices somewhat.
+    Note: At the time of writing, there are memory problems in the cupy implementation of `eliminate_zeros`.
+    Therefore, this function copies the matrix to host, eliminates the zeros there and then copies back to GPU.
+
+    Args:
+        A: sparse matrix to be pruned
+
+    Returns:
+        CSC sparse matrix
+    """
+    A = A.tocsc()
+    A.eliminate_zeros()
+    return A
