@@ -200,7 +200,7 @@ class Chebychev(SpectralOneDBase):
         Returns:
             Data in spectral space
         """
-        axes = axes if axes else tuple(i for i in range(u.ndim))
+        axes = axes if axes else tuple((-1,))
         kwargs["s"] = shape
         kwargs["norm"] = kwargs.get("norm", "backward")
 
@@ -238,7 +238,7 @@ class Chebychev(SpectralOneDBase):
 
     def itransform(self, u, *args, axes=None, shape=None, **kwargs):
         """
-        Inverse DCT along axis.
+        Inverse DCT along axes.
 
         Args:
             u: Data you want to transform
@@ -247,7 +247,7 @@ class Chebychev(SpectralOneDBase):
         Returns:
             Data in physical space
         """
-        axes = axes if axes else tuple(i for i in range(u.ndim))
+        axes = axes if axes else tuple((-1,))
         kwargs["s"] = shape
         kwargs["norm"] = kwargs.get("norm", "backward")
         kwargs["overwrite_x"] = kwargs.get("overwrite_x", False)

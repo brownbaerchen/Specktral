@@ -35,7 +35,8 @@ class CompositeBase:
         return self.xp.meshgrid(*grids, indexing="ij")
 
     def transform(self, u, axes=None):
-        axes = axes if axes else tuple(i for i in range(self.ndim))
+        # TODO: assert that axes is tuple with negative indices
+        axes = axes if axes else tuple(-(i + 1) for i in range(self.ndim))
 
         u_hat = u.copy()
         for axis in axes:
@@ -44,7 +45,8 @@ class CompositeBase:
         return u_hat
 
     def itransform(self, u_hat, axes=None):
-        axes = axes if axes else tuple(i for i in range(self.ndim))
+        # TODO: assert that axes is tuple with negative indices
+        axes = axes if axes else tuple(-(i + 1) for i in range(self.ndim))
 
         u = u_hat.copy()
         for axis in axes:

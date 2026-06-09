@@ -111,7 +111,7 @@ class Fourier(SpectralOneDBase):
         Returns:
             transformed data
         """
-        axes = axes if axes else tuple(i for i in range(u.ndim))
+        axes = axes if axes else tuple((-1,))
         kwargs["s"] = shape
         plan = self.get_plan(u, *args, forward=True, axes=axes, **kwargs)
         return plan(u, *args, axes=axes, **kwargs)
@@ -127,7 +127,7 @@ class Fourier(SpectralOneDBase):
         Returns:
             transformed data
         """
-        axes = axes if axes else tuple(i for i in range(u.ndim))
+        axes = axes if axes else tuple((-1,))
         kwargs["s"] = shape
         plan = self.get_plan(u, *args, forward=False, axes=axes, **kwargs)
         return plan(u, *args, axes=axes, **kwargs) / np.prod(

@@ -47,14 +47,6 @@ class MultiComponent:
                 f"Don't know how to compute index for {type(name)=}"
             )
 
-    def transform(self, u, axes=None):
-        axes = axes if axes else tuple(-(i + 1) for i in range(self.base.ndim))
-        return self.base.transform(u, axes=axes)
-
-    def itransform(self, u_hat, axes=None):
-        axes = axes if axes else tuple(-(i + 1) for i in range(self.base.ndim))
-        return self.base.itransform(u_hat, axes=axes)
-
     def get_empty_operator_matrix(self, diag=False):
         """
         Return a matrix of operators to be filled with the connections between the solution components.

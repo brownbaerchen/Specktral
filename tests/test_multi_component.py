@@ -30,9 +30,9 @@ def test_operator():
     expect[0] = -xp.sin(x)
     expect[1] = xp.sin(x) + xp.cos(x)
 
-    u_hat = eq.transform(u)
+    u_hat = base.transform(u)
     get_hat = (operator @ u_hat.flatten()).reshape(u_hat.shape)
-    get = eq.itransform(get_hat)
+    get = base.itransform(get_hat)
 
     assert xp.allclose(expect, get)
 
@@ -73,8 +73,8 @@ def test_operator_2d():
     expect[0] = -xp.sin(X)
     expect[1] = xp.sin(X) + xp.cos(X)
 
-    u_hat = eq.transform(u)
+    u_hat = base.transform(u)
     get_hat = (operator @ u_hat.flatten()).reshape(u_hat.shape)
-    get = eq.itransform(get_hat)
+    get = base.itransform(get_hat)
 
     assert xp.allclose(expect, get)
