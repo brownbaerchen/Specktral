@@ -1,5 +1,6 @@
 import numpy as np
 
+from .composite import CompositeBase
 from .utils import eliminate_zeros
 
 
@@ -17,9 +18,14 @@ class MultiComponent:
         return len(self.components)
 
     def empty_physical(self):
-        shape = [
-            self.ncomponents,
-        ] + [self.base.N]
+        if isinstance(self.base, CompositeBase):
+            shape = [
+                self.ncomponents,
+            ] + [base.N for base in self.base.bases]
+        else:
+            shape = [
+                self.ncomponents,
+            ] + [self.base.N]
         return self.xp.empty(shape)
 
     def index(self, name):
@@ -42,15 +48,11 @@ class MultiComponent:
             )
 
     def transform(self, u, axes=None):
-        axes = axes if axes else tuple(i for i in range(self.base.ndim))
-        axes = tuple([axis + 1 for axis in axes])
-
+        axes = axes if axes else tuple(-(i + 1) for i in range(self.base.ndim))
         return self.base.transform(u, axes=axes)
 
     def itransform(self, u_hat, axes=None):
-        axes = axes if axes else tuple(i for i in range(self.base.ndim))
-        axes = tuple([axis + 1 for axis in axes])
-
+        axes = axes if axes else tuple(-(i + 1) for i in range(self.base.ndim))
         return self.base.itransform(u_hat, axes=axes)
 
     def get_empty_operator_matrix(self, diag=False):

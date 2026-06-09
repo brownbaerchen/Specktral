@@ -106,3 +106,16 @@ class CompositeBase:
             f"Set up differentiation matrix along axes {axes} with kwargs {kwargs}"
         )
         return D
+
+    def get_Id(self):
+        """
+        Get identity matrix
+
+        Returns:
+            sparse identity matrix
+        """
+        Id = self.expand_matrix_ND(self.bases[0].get_Id(), 0)
+        for axis in range(1, self.ndim):
+            _I = self.bases[axis].get_Id()
+            Id = Id @ self.expand_matrix_ND(_I, axis)
+        return Id
