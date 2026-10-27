@@ -125,6 +125,10 @@ class Chebychev(SpectralOneDBase):
         Returns:
            Sparse integration matrix
         """
+        if self.x0 != -1 or self.x1 != 1:
+            raise NotImplementedError(
+                f"Integration in Chebychev base is only implemented on the standard domain (-1, 1), you tried on ({self.x0}, {self.x1})."
+            )
         S = self.sparse_lib.diags(
             1 / (self.xp.arange(self.N - 1) + 1), offsets=-1
         ) @ self.get_conv("T2U")
