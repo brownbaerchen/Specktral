@@ -115,6 +115,15 @@ class Chebychev(SpectralOneDBase):
         """
         return self.get_conv(conv)
 
+    def assert_standard_interval(self):
+        """
+        Assert that the standard interval (-1, 1) is used.
+        """
+        if self.x0 != -1 or self.x1 != 1:
+            raise NotImplementedError(
+                f"This function in Chebychev base is only implemented on the standard domain (-1, 1), you tried on ({self.x0}, {self.x1})."
+            )
+
     def get_integration_matrix(self, lbnd=0):
         """
         Get matrix for integration
@@ -125,6 +134,7 @@ class Chebychev(SpectralOneDBase):
         Returns:
            Sparse integration matrix
         """
+        self.assert_standard_interval()
         S = self.sparse_lib.diags(
             1 / (self.xp.arange(self.N - 1) + 1), offsets=-1
         ) @ self.get_conv("T2U")
@@ -299,10 +309,12 @@ class Chebychev(SpectralOneDBase):
             kind ('integral' or 'dirichlet'): Kind of boundary condition you want
         """
         if kind.lower() == "integral":
+            self.assert_standard_interval()
             return self.get_integ_BC_row(**kwargs)
         elif kind.lower() == "dirichlet":
             return self.get_Dirichlet_BC_row(**kwargs)
         elif kind.lower() == "neumann":
+            self.assert_standard_interval()
             return self.get_Neumann_BC_row(**kwargs)
         else:
             return super().get_BC(kind)
